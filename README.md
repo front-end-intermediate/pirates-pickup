@@ -1,5 +1,13 @@
 # Getting Started with Create React App
 
+## Homework
+
+Research the react useEffect hook - https://react.dev/reference/react/useEffect
+- use it to bring the data in from the instance of json-server - 
+- use fetch inside a useEffect hook
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
