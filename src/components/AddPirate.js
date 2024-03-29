@@ -7,7 +7,7 @@ const AddPirate = ({ addPirate }) => {
     name: "",
     vessel: "",
     weapon: "",
-    death: "",
+    year: "",
     desc: "",
   };
 

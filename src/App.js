@@ -1,6 +1,5 @@
 import Header from "./components/Header";
 import Pirate from "./components/Pirate";
-import piratesFile from "./data/sample-pirates-array";
 import React from "react";
 import AddPirate from "./components/AddPirate";
 
@@ -14,7 +13,15 @@ const randomize = () =>
   pirateCalls[Math.floor(Math.random() * pirateCalls.length)];
 
 function App() {
-  const [pirates, setPirates] = React.useState(piratesFile);
+  const [pirates, setPirates] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch("http://localhost:3001/pirates")
+      .then((res) => res.json())
+      .then((data) => {
+        setPirates(data);
+      });
+  }, []);
 
   const addPirate = (pirate) => {
     pirate.image = "avatar.png";
