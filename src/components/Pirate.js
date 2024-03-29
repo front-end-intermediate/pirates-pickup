@@ -3,6 +3,7 @@ import "../assets/css/Pirate.css";
 import avatar from "../assets/img/avatar.png";
 
 function Pirate({
+  // note the new id in the next line:
   pirate: { name, year, weapon, vessel, desc, id },
   tagline,
   removePirate,
@@ -21,6 +22,7 @@ function Pirate({
       <article>
         <h2>{tagline}</h2>
         <p>{desc}</p>
+        {/* note that removePirate passes the id: */}
         <Button onClick={() => removePirate(id)} text="Remove Pirate" />
       </article>
     </section>
