@@ -41,7 +41,6 @@ function App() {
       method: "DELETE",
     })
       .then((res) => res.json())
-      .then((pirate) => console.log(pirate))
       .then(setPirates(pirates.filter((pirate) => pirate.id !== pirateId)));
   };
 
