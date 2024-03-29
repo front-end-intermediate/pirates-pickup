@@ -1,78 +1,139 @@
-# Getting Started with Create React App
+# Homework
 
-## Homework
+Download this repo for the homework and run `npm i` to install the dependencies.
 
-Research the react useEffect hook - https://react.dev/reference/react/useEffect
-- use it to bring the data in from the instance of json-server - 
-- use fetch inside a useEffect hook
+In order to work with the pirates data you need to run `$npm start` in one terminal and  `$npm run json` in a second terminal
 
+Ensure that the pirates endpoint is up by visiting `http://localhost:3001/pirates` in your browser _and_ that you can see 10 pirates in the UI.
 
+First we will alter the `addPirate` function in `App.js` so that it creates a new pirate not only in the app's state but in the database (`pirates.json`) as well.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+`addPirate` before:
 
-## Available Scripts
+```js
+  const addPirate = (pirate) => {
+    pirate.image = "avatar.png";
+    setPirates((prev) => [pirate, ...prev]);
+  };
+```
 
-In the project directory, you can run:
+`addPirate` after:
 
-### `npm start`
+```js
+  const addPirate = (pirate) => {
+    pirate.image = "avatar.png";
+    fetch("http://localhost:3001/pirates", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(pirate),
+    })
+      .then((res) => res.json())
+      .then((newPirate) => setPirates([newPirate, ...pirates]));
+  };
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Note: 
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- the second parameter to the fetch call here:
 
-### `npm test`
+```js
+// everything after the comma on the line below:
+fetch("http://localhost:3001/pirates", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(pirate),
+})
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+We will discuss this in class.
 
-### `npm run build`
+- json server sends back the newly inserted pirate so that the response in this line:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```js
+.then((res) => res.json())
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+is the newly added pirate (try logging `res` to the console).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Test in the UI to ensure the you can create a pirate. Open and examine `pirates.json` - you should see it there too.
 
-### `npm run eject`
+(Now that you can create a pirate, deleting them should be a bit easier as you will not have to replenish `pirates.json` should you ever delete all of them.)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Note that the pirates served from `http://localhost:3001/pirates` all have a unique id.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Instead of specifying which pirate to delete using the pirate's name in `Pirate.js`:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```js
+<Button onClick={() => removePirate(name)} text="Remove Pirate" />
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+you will destructure the id and pass the it to the `removePirate` function instead:
 
-## Learn More
+After:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```js
+function Pirate({
+  // note the new id in the next line:
+  pirate: { name, year, weapon, vessel, desc, id },
+  tagline,
+  removePirate,
+}) {
+  return (
+    <section>
+      <summary>
+        <img src={avatar} alt="pirate" />
+        <h3>{name}</h3>
+        <ul>
+          <li>Died: {year}</li>
+          <li>Weapon: {weapon}</li>
+          <li>Vessel: {vessel}</li>
+        </ul>
+      </summary>
+      <article>
+        <h2>{tagline}</h2>
+        <p>{desc}</p>
+        {/* note that removePirate passes the id: */}
+        <Button onClick={() => removePirate(id)} text="Remove Pirate" />
+      </article>
+    </section>
+  );
+}
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+We do this because json server creates a unique id for each pirate you add.
 
-### Code Splitting
+Our current `removePirate` function filters the pirates using the pirate name:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```js
+  const removePirate = (name) => {
+    const newPirates = pirates.filter((pirate) => pirate.name !== name);
+    setPirates(newPirates);
+  };
+```
 
-### Analyzing the Bundle Size
+Now that we are passing it an id, rename the argument from `name` to `pirateId`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```js
+  const removePirate = (pirateId) => {
+    const newPirates = pirates.filter((pirate) => pirate.id !== pirateId);
+    setPirates(newPirates);
+  };
+```
 
-### Making a Progressive Web App
+Now add a fetch call with the method set to 'DELETE':
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```js
+  const removePirate = (pirateId) => {
+    fetch(`http://localhost:3001/pirates/${pirateId}`, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then(setPirates(pirates.filter((pirate) => pirate.id !== pirateId)));
+  };
+```
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Test to ensure that you can both add and remove pirates.
