@@ -3,7 +3,7 @@ import "../assets/css/Pirate.css";
 import avatar from "../assets/img/avatar.png";
 
 function Pirate({
-  pirate: { name, year, weapon, vessel, desc, id },
+  pirate: { name, year, weapon, vessel, desc },
   tagline,
   removePirate,
 }) {
@@ -21,7 +21,7 @@ function Pirate({
       <article>
         <h2>{tagline}</h2>
         <p>{desc}</p>
-        <Button onClick={() => removePirate(id)} text="Remove Pirate" />
+        <Button onClick={() => removePirate(name)} text="Remove Pirate" />
       </article>
     </section>
   );

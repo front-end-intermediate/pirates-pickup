@@ -25,24 +25,12 @@ function App() {
 
   const addPirate = (pirate) => {
     pirate.image = "avatar.png";
-    fetch("http://localhost:3001/pirates", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(pirate),
-    })
-      .then((res) => res.json())
-      .then((newPirate) => setPirates([newPirate, ...pirates]));
+    setPirates((prev) => [pirate, ...prev]);
   };
 
-  const removePirate = (pirateId) => {
-    fetch(`http://localhost:3001/pirates/${pirateId}`, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((pirate) => console.log(pirate))
-      .then(setPirates(pirates.filter((pirate) => pirate.id !== pirateId)));
+  const removePirate = (name) => {
+    const newPirates = pirates.filter((pirate) => pirate.name !== name);
+    setPirates(newPirates);
   };
 
   return (
